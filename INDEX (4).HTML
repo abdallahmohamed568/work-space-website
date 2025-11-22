@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مصنع الأصيل للحصير البلاستيك | م. محمد محمود</title>
+    
+    <!-- الخطوط والأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* تخصيصات CSS */
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #f59e0b;
+            --bg-light: #f8fafc;
+        }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-light);
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+        .hero-pattern {
+            background-color: #1e3a8a;
+            background-image: radial-gradient(#3b82f6 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+        .modal-backdrop {
+            background-color: rgba(30, 58, 138, 0.95);
+            backdrop-filter: blur(5px);
+        }
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
+        
+        /* تأثيرات الصور */
+        .gallery-img {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        .gallery-img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased pb-24">
+
+    <!-- 1. نافذة تسجيل الدخول (Modal) -->
+    <div id="authModal" class="fixed inset-0 z-[100] flex items-center justify-center modal-backdrop transition-opacity duration-300 hidden">
+        <div class="bg-white w-full max-w-md mx-4 rounded-3xl shadow-2xl overflow-hidden p-6 relative animate-[fadeIn_0.3s_ease-out]">
+            
+            <div class="text-center mb-6 border-b border-gray-100 pb-4">
+                <div class="w-16 h-16 bg-blue-100 text-blue-900 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-sm">
+                    <i class="fa-solid fa-industry"></i>
+                </div>
+                <h2 class="text-2xl font-black text-gray-800">مصنع الأصيل</h2>
+                <p class="text-gray-500 text-xs font-bold mt-1">إدارة م. محمد محمود</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">الاسم / اسم المحل</label>
+                    <input type="text" id="userName" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5 font-bold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="اكتب الاسم هنا..">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-2">صفة الدخول</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="userType" value="consumer" checked class="peer sr-only" onchange="toggleMerchantField()">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-blue-900 transition group-hover:bg-gray-50">
+                                <i class="fa-solid fa-user block text-xl mb-1"></i>
+                                <span class="text-sm font-bold">مستهلك (قطاعي)</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="userType" value="merchant" class="peer sr-only" onchange="toggleMerchantField()">
+                            <div class="border-2 border-gray-200 rounded-xl p-3 text-center peer-checked:border-yellow-500 peer-checked:bg-yellow-50 peer-checked:text-yellow-900 transition group-hover:bg-gray-50">
+                                <i class="fa-solid fa-shop block text-xl mb-1"></i>
+                                <span class="text-sm font-bold">تاجر (جملة)</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="merchantCodeField" class="hidden">
+                    <label class="block text-xs font-bold text-yellow-600 mb-1">كود التفعيل (للتجار فقط)</label>
+                    <input type="password" id="merchantCode" class="w-full bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 font-bold text-gray-800 outline-none focus:ring-2 focus:ring-yellow-500" placeholder="أدخل الكود (1234)">
+                </div>
+
+                <button type="submit" class="w-full bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg hover:bg-blue-800 transition active:scale-[0.98]">
+                    دخول النظام
+                </button>
+            </form>
+
+            <div class="mt-6 pt-4 border-t border-gray-100 text-center bg-gray-50 -mx-6 -mb-6 p-4">
+                <p class="text-xs text-gray-500 font-bold mb-2">هل أنت تاجر جديد؟ تواصل مع الإدارة أولاً</p>
+                <a href="https://wa.me/201006505376" target="_blank" class="inline-flex items-center justify-center gap-2 text-green-700 font-bold bg-white px-4 py-2 rounded-full border border-green-200 shadow-sm hover:bg-green-50 transition text-xs w-full">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> تواصل مع م. محمد محمود
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. شريط التنقل (Navbar) -->
+    <nav class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100 backdrop-blur-md bg-white/90">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-900 text-white w-9 h-9 flex items-center justify-center rounded-lg shadow-md">
+                    <i class="fa-solid fa-industry"></i>
+                </div>
+                <div class="leading-tight">
+                    <h1 class="text-sm font-black text-blue-900">مصنع الأصيل</h1>
+                    <span class="text-[10px] text-gray-500 font-bold block" id="welcomeUser">زائر</span>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <div id="priceBadge" class="hidden md:flex items-center px-3 py-1 rounded-full bg-gray-100 text-xs font-bold text-gray-600"></div>
+                <button onclick="logout()" class="bg-red-50 text-red-500 w-9 h-9 rounded-full flex items-center justify-center hover:bg-red-100 transition" title="خروج">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 3. مقدمة (Hero Section) -->
+    <header class="hero-pattern text-white py-12 px-4 text-center relative">
+        <div class="container mx-auto relative z-10">
+            <h2 class="text-3xl md:text-5xl font-black mb-4 leading-tight">جودة تعيش.. وتصميم يكمل بيتك</h2>
+            <p class="text-blue-200 text-sm md:text-base font-bold max-w-lg mx-auto mb-8">
+                أحدث تشكيلة حصير بلاستيك بخامات بيور | بيع جملة وقطاعي | شحن لجميع المحافظات
+            </p>
+            <a href="#orderSection" class="inline-block bg-yellow-500 text-blue-900 px-8 py-3 rounded-full font-bold shadow-lg hover:bg-yellow-400 transition active:scale-95">
+                <i class="fa-solid fa-cart-shopping mr-2"></i> اطلب الآن
+            </a>
+        </div>
+    </header>
+
+    <!-- 4. معرض الصور (Gallery) - جديد -->
+    <section id="gallery" class="py-10 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-black text-blue-900">✨ من إنتاجنا</h3>
+                <p class="text-gray-500 text-sm">صور حية لمنتجات مصنع الأصيل</p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- الصور المرفقة -->
+                <div class="overflow-hidden rounded-xl shadow-md aspect-w-4 aspect-h-3 bg-gray-200">
+                    <img src="https://i.ibb.co/bR6z4LRg/Whats-App-Image-2025-11-21-at-10-37-58-PM.jpg" alt="حصير 1" class="gallery-img w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md aspect-w-4 aspect-h-3 bg-gray-200">
+                    <img src="https://i.ibb.co/My43GWns/Whats-App-Image-2025-11-21-at-10-38-00-PM-2.jpg" alt="حصير 2" class="gallery-img w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md aspect-w-4 aspect-h-3 bg-gray-200">
+                    <img src="https://i.ibb.co/4nHWmmqB/Whats-App-Image-2025-11-21-at-10-38-00-PM-1.jpg" alt="حصير 3" class="gallery-img w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md aspect-w-4 aspect-h-3 bg-gray-200">
+                    <img src="https://i.ibb.co/NnYSJCGR/Whats-App-Image-2025-11-21-at-10-38-00-PM.jpg" alt="حصير 4" class="gallery-img w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md aspect-w-4 aspect-h-3 bg-gray-200">
+                    <img src="https://i.ibb.co/1GSzJGNt/Whats-App-Image-2025-11-21-at-10-37-59-PM.jpg" alt="حصير 5" class="gallery-img w-full h-full object-cover">
+                </div>
+                <div class="overflow-hidden rounded-xl shadow-md aspect-w-4 aspect-h-3 bg-gray-200">
+                    <img src="https://i.ibb.co/bR6z4LRg/Whats-App-Image-2025-11-21-at-10-37-58-PM.jpg" alt="حصير 6" class="gallery-img w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. قسم الطلب (Catalog) -->
+    <div id="orderSection" class="container mx-auto px-4 max-w-4xl mt-8 relative z-20">
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
+            
+            <!-- تبويب التصنيف -->
+            <div class="flex text-center border-b border-gray-100 bg-gray-50">
+                <button onclick="switchTab('standard')" id="tabStandard" class="flex-1 py-4 font-bold text-sm text-blue-900 border-b-4 border-blue-900 bg-white transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rug"></i> حصير منزلي (عادي)
+                </button>
+                <button onclick="switchTab('mosque')" id="tabMosque" class="flex-1 py-4 font-bold text-sm text-gray-500 border-b-4 border-transparent hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-mosque"></i> حصير مساجد
+                </button>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- تنبيه سعر المساجد -->
+                <div id="mosqueAlert" class="hidden bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-info-circle text-lg"></i>
+                    <span>سعر موحد للمساجد: 43 جنيه للمتر (عرض 120 سم).</span>
+                </div>
+
+                <!-- 1. اختيار اللون -->
+                <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                    <label class="text-xs font-bold text-gray-500 mb-2 block">1. اختر اللون / النقشة</label>
+                    <div class="relative">
+                        <select id="colorSelect" onchange="checkCustomColor()" class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer">
+                            <!-- يتم الملء بالجافاسكريبت -->
+                        </select>
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+
+                    <!-- لوحة الألوان المخصصة (تظهر عند اختيار تخصيص) -->
+                    <div id="customColorPanel" class="hidden mt-4 pt-4 border-t border-gray-200 animate-[slideDown_0.2s]">
+                        <h4 class="text-sm font-black text-blue-900 mb-3"><i class="fa-solid fa-palette text-yellow-500"></i> تكوين اللون الخاص:</h4>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">لون الأرضية (الأساس)</label>
+                                <select id="customBaseColor" class="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm font-bold text-gray-700 outline-none focus:border-blue-500"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">لون التطعيم 1</label>
+                                <select id="customMix1" class="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm font-bold text-gray-700 outline-none focus:border-blue-500"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">لون التطعيم 2</label>
+                                <select id="customMix2" class="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm font-bold text-gray-700 outline-none focus:border-blue-500"></select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 mb-1">لون التطعيم 3</label>
+                                <select id="customMix3" class="w-full bg-white border border-gray-300 rounded-lg p-2 text-sm font-bold text-gray-700 outline-none focus:border-blue-500"></select>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-gray-400">* سيتم تصنيع الحصيرة بهذه المواصفات.</p>
+                    </div>
+                </div>
+
+                <!-- 2. المدخلات (عرض - طول - عدد) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- العرض -->
+                    <div>
+                        <label class="text-xs font-bold text-blue-900 mb-1 block">2. العرض</label>
+                        <div class="relative">
+                            <select id="widthSelect" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 text-sm" onchange="updateLivePrice()">
+                                <option value="0">اختر العرض...</option>
+                            </select>
+                        </div>
+                        <div class="text-[10px] text-blue-600 font-bold mt-1 px-1" id="unitPriceDisplay">--</div>
+                    </div>
+
+                    <!-- الطول -->
+                    <div>
+                        <label class="text-xs font-bold text-blue-900 mb-1 block">3. الطول (متر)</label>
+                        <input type="number" id="lengthInput" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-center outline-none focus:ring-2 focus:ring-blue-500 text-sm placeholder-gray-400" placeholder="مثال: 5" oninput="updateLivePrice()">
+                    </div>
+
+                    <!-- العدد -->
+                    <div>
+                        <label class="text-xs font-bold text-blue-900 mb-1 block">4. العدد</label>
+                        <div class="flex items-center">
+                            <button onclick="adjQty(-1)" class="bg-blue-200 text-blue-900 w-10 h-10 rounded-r-xl font-bold hover:bg-blue-300">-</button>
+                            <input type="number" id="qtyInput" value="1" min="1" class="w-full h-10 bg-gray-50 border-y border-gray-200 font-bold text-center outline-none text-sm" oninput="updateLivePrice()">
+                            <button onclick="adjQty(1)" class="bg-blue-200 text-blue-900 w-10 h-10 rounded-l-xl font-bold hover:bg-blue-300">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- زر الإضافة -->
+                <div class="flex flex-col md:flex-row items-center gap-4 pt-2 border-t border-gray-100 mt-4">
+                    <div class="text-center md:text-right w-full md:w-auto">
+                        <div class="text-xs text-gray-500 font-bold">تكلفت هذا البند</div>
+                        <div class="text-2xl font-black text-blue-900" id="currentItemTotal">0 <span class="text-sm">ج.م</span></div>
+                    </div>
+                    <button onclick="addToInvoice()" class="flex-1 w-full bg-yellow-500 hover:bg-yellow-600 text-blue-900 font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/20 transition transform active:scale-[0.98] flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-lg"></i>
+                        <span>إضافة للفاتورة</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. قسم الفاتورة (السلة) -->
+    <div id="invoiceSection" class="container mx-auto px-4 max-w-4xl mt-8 hidden">
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 relative">
+            
+            <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                <h3 class="font-black text-gray-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-blue-500"></i> فاتورة الطلب
+                </h3>
+                <button onclick="clearCart()" class="text-xs text-red-500 font-bold hover:bg-red-50 px-2 py-1 rounded transition">حذف الكل</button>
+            </div>
+
+            <!-- جدول الأصناف -->
+            <div class="table-container mb-6">
+                <table class="w-full text-right text-sm">
+                    <thead class="bg-gray-50 text-gray-500 text-xs">
+                        <tr>
+                            <th class="p-3 rounded-r-lg whitespace-nowrap">الصنف / اللون</th>
+                            <th class="p-3 whitespace-nowrap">المقاس</th>
+                            <th class="p-3 text-center">العدد</th>
+                            <th class="p-3 whitespace-nowrap">السعر</th>
+                            <th class="p-3 text-center rounded-l-lg">حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartTableBody" class="font-bold text-gray-700 divide-y divide-gray-50">
+                        <!-- يتم التعبئة بالجافاسكريبت -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- الإجمالي والزر -->
+            <div class="bg-blue-900 rounded-2xl p-5 text-white flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg shadow-blue-900/20">
+                <div>
+                    <div class="text-blue-200 text-xs font-bold">الإجمالي النهائي للفاتورة</div>
+                    <div class="text-3xl font-black" id="grandTotalDisplay">0 <span class="text-sm">جنيه</span></div>
+                </div>
+                <button onclick="sendOrder()" class="w-full md:w-auto bg-green-500 hover:bg-green-600 text-white px-8 py-3.5 rounded-xl font-bold transition shadow-lg flex items-center justify-center gap-2 animate-pulse">
+                    <span>إرسال الطلب واتساب</span>
+                    <i class="fa-brands fa-whatsapp text-2xl"></i>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 7. الفوتر -->
+    <footer class="text-center py-8 text-gray-400 text-xs mt-8">
+        &copy; 2025 مصنع الأصيل - م. محمد محمود
+    </footer>
+
+    <!-- ================= المنطق البرمجي (JavaScript) ================= -->
+    <script>
+        // ------------------ 1. البيانات والثوابت ------------------
+        const PRICES = {
+            retail: { 
+                width_200: 85, width_180: 75, width_150: 65, width_120: 55, width_090: 40
+            },
+            wholesale: { 
+                width_200: 73, width_180: 63, width_150: 53, width_120: 43, width_090: 33
+            },
+            mosque: 43 // سعر المتر للمساجد (عرض 120)
+        };
+
+        const WIDTH_LABELS = {
+            width_200: "200 سم", width_180: "180 سم", width_150: "150 سم", width_120: "120 سم", width_090: "90 سم"
+        };
+
+        // قائمة الألوان المتاحة للتصميم
+        const AVAILABLE_COLORS_FOR_MIX = [
+            "أبيض", "أسود", "أحمر", "أخضر", "ذهبي", "فضي", "أزرق", "تركواز", "بينك"
+        ];
+
+        // ألوان الحصير العادي
+        const COLORS_STANDARD = [
+            "أحمر * أسود", 
+            "أحمر * رصاصي",
+            "أرضية ذهبي (4 ألوان)", 
+            "أرضية أحمر (4 ألوان)", 
+            "أرضية أبيض (4 ألوان)", 
+            "أرضية أزرق (4 ألوان)", 
+            "أرضية رصاصي (4 ألوان)",
+            "أرضية أبيض وأسود وأحمر ودهبي (4 ألوان)",
+            "تركواز * أسود", 
+            "تركواز * رصاصي",
+            "بمبي/بينك * أسود", 
+            "بمبي * رصاصي",
+            "--- ✨ صمم ألوانك (أرضية + 3 ألوان) ✨ ---" // الخيار الجديد
+        ];
+
+        // ألوان حصير المساجد
+        const COLORS_MOSQUE = [
+            "أخضر * أسود (محراب - 120 سم)", 
+            "أخضر سادة (صفوف)", 
+            "أخضر (مقاسات خاصة)"
+        ];
+
+        // ------------------ 2. المتغيرات العامة ------------------
+        let currentUser = null;
+        let currentCategory = 'standard'; 
+        let cart = [];
+
+        // ------------------ 3. عند التحميل ------------------
+        window.onload = function() {
+            checkAuth();
+            renderProductForm();
+            fillCustomColorDropdowns();
+        };
+
+        // ------------------ 4. المصادقة ------------------
+        function checkAuth() {
+            const storedUser = localStorage.getItem('asil_v6_user');
+            const modal = document.getElementById('authModal');
+            
+            if (!storedUser) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                currentUser = JSON.parse(storedUser);
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                updateHeaderUI();
+            }
+        }
+
+        function toggleMerchantField() {
+            const type = document.querySelector('input[name="userType"]:checked').value;
+            const field = document.getElementById('merchantCodeField');
+            if(type === 'merchant') field.classList.remove('hidden');
+            else field.classList.add('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const name = document.getElementById('userName').value;
+            const type = document.querySelector('input[name="userType"]:checked').value;
+            const code = document.getElementById('merchantCode').value;
+
+            if (type === 'merchant' && code !== '1234') {
+                alert('كود التاجر غير صحيح! (الكود للتجربة: 1234)'); return;
+            }
+
+            currentUser = { name, type };
+            localStorage.setItem('asil_v6_user', JSON.stringify(currentUser));
+            checkAuth();
+        }
+
+        function logout() {
+            if(confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('asil_v6_user');
+                location.reload();
+            }
+        }
+
+        function updateHeaderUI() {
+            document.getElementById('welcomeUser').innerText = `مرحباً، ${currentUser.name}`;
+            const badge = document.getElementById('priceBadge');
+            if(currentUser.type === 'merchant') {
+                badge.innerHTML = `<i class="fa-solid fa-check-circle text-yellow-500 ml-1"></i> تاجر جملة`;
+            } else {
+                badge.innerHTML = `<i class="fa-solid fa-user text-blue-500 ml-1"></i> قطاعي`;
+            }
+        }
+
+        // ------------------ 5. منطق المنتج والألوان ------------------
+        function switchTab(category) {
+            currentCategory = category;
+            
+            const tabStandard = document.getElementById('tabStandard');
+            const tabMosque = document.getElementById('tabMosque');
+            const mosqueAlert = document.getElementById('mosqueAlert');
+            const customPanel = document.getElementById('customColorPanel');
+
+            if (category === 'standard') {
+                tabStandard.className = "flex-1 py-4 font-bold text-sm text-blue-900 border-b-4 border-blue-900 bg-white transition-all flex items-center justify-center gap-2";
+                tabMosque.className = "flex-1 py-4 font-bold text-sm text-gray-500 border-b-4 border-transparent hover:bg-gray-100 transition-all flex items-center justify-center gap-2";
+                mosqueAlert.classList.add('hidden');
+            } else {
+                tabStandard.className = "flex-1 py-4 font-bold text-sm text-gray-500 border-b-4 border-transparent hover:bg-gray-100 transition-all flex items-center justify-center gap-2";
+                tabMosque.className = "flex-1 py-4 font-bold text-sm text-green-800 border-b-4 border-green-600 bg-green-50 transition-all flex items-center justify-center gap-2";
+                mosqueAlert.classList.remove('hidden');
+                customPanel.classList.add('hidden'); // إخفاء التخصيص في المساجد
+            }
+
+            renderProductForm();
+        }
+
+        function renderProductForm() {
+            const colorSelect = document.getElementById('colorSelect');
+            const widthSelect = document.getElementById('widthSelect');
+
+            // تعبئة القائمة الرئيسية للألوان
+            const colors = currentCategory === 'standard' ? COLORS_STANDARD : COLORS_MOSQUE;
+            colorSelect.innerHTML = colors.map(c => {
+                const val = c.includes("صمم ألوانك") ? "custom_mix" : c;
+                return `<option value="${val}">${c}</option>`;
+            }).join('');
+
+            // تعبئة المقاسات
+            if (currentCategory === 'standard') {
+                widthSelect.innerHTML = `<option value="0">اختر العرض...</option>` + 
+                    Object.keys(WIDTH_LABELS).map(k => `<option value="${k}">${WIDTH_LABELS[k]}</option>`).join('');
+            } else {
+                widthSelect.innerHTML = `
+                    <option value="width_120" selected>120 سم (قياسي للمحراب والصفوف)</option>
+                    <option value="custom">مقاس خاص (بالاتفاق)</option>
+                `;
+            }
+            
+            checkCustomColor(); // إخفاء/إظهار لوحة التخصيص
+            updateLivePrice();
+        }
+
+        function fillCustomColorDropdowns() {
+            const options = AVAILABLE_COLORS_FOR_MIX.map(c => `<option value="${c}">${c}</option>`).join('');
+            document.getElementById('customBaseColor').innerHTML = `<option value="" disabled selected>اختر...</option>` + options;
+            document.getElementById('customMix1').innerHTML = `<option value="" disabled selected>لون 1...</option>` + options;
+            document.getElementById('customMix2').innerHTML = `<option value="" disabled selected>لون 2...</option>` + options;
+            document.getElementById('customMix3').innerHTML = `<option value="" disabled selected>لون 3...</option>` + options;
+        }
+
+        function checkCustomColor() {
+            const mainColor = document.getElementById('colorSelect').value;
+            const panel = document.getElementById('customColorPanel');
+            
+            if (mainColor === 'custom_mix' && currentCategory === 'standard') {
+                panel.classList.remove('hidden');
+            } else {
+                panel.classList.add('hidden');
+            }
+        }
+
+        function getPrice(widthKey) {
+            if (currentCategory === 'mosque') {
+                if (widthKey === 'width_120') return PRICES.mosque;
+                return 0; // Custom
+            }
+            const mode = currentUser.type === 'merchant' ? 'wholesale' : 'retail';
+            return PRICES[mode][widthKey] || 0;
+        }
+
+        function updateLivePrice() {
+            const widthKey = document.getElementById('widthSelect').value;
+            const length = parseFloat(document.getElementById('lengthInput').value) || 0;
+            const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+
+            const pricePerMeter = getPrice(widthKey);
+            const unitPriceDisplay = document.getElementById('unitPriceDisplay');
+            const totalDisplay = document.getElementById('currentItemTotal');
+
+            if (widthKey === 'custom') {
+                unitPriceDisplay.innerText = "سعر خاص";
+                totalDisplay.innerText = "--";
+                return;
+            }
+
+            if (pricePerMeter > 0) {
+                unitPriceDisplay.innerText = `${pricePerMeter} جنيه/متر`;
+                const total = pricePerMeter * length * qty;
+                totalDisplay.innerHTML = length > 0 ? `${total.toFixed(0)} <span class="text-sm">ج.م</span>` : '0';
+            } else {
+                unitPriceDisplay.innerText = "--";
+                totalDisplay.innerHTML = "0";
+            }
+        }
+
+        function adjQty(delta) {
+            const input = document.getElementById('qtyInput');
+            let val = parseInt(input.value) || 1;
+            val = Math.max(1, val + delta);
+            input.value = val;
+            updateLivePrice();
+        }
+
+        // ------------------ 6. السلة (الفاتورة) ------------------
+        function addToInvoice() {
+            const widthSelect = document.getElementById('widthSelect');
+            const lengthInput = document.getElementById('lengthInput');
+            const qtyInput = document.getElementById('qtyInput');
+            const colorSelect = document.getElementById('colorSelect');
+
+            const widthKey = widthSelect.value;
+            const length = parseFloat(lengthInput.value);
+            const qty = parseInt(qtyInput.value);
+            let color = colorSelect.value;
+
+            // منطق اللون المخصص
+            if (color === 'custom_mix') {
+                const base = document.getElementById('customBaseColor').value;
+                const m1 = document.getElementById('customMix1').value;
+                const m2 = document.getElementById('customMix2').value;
+                const m3 = document.getElementById('customMix3').value;
+
+                if(!base || !m1 || !m2 || !m3) {
+                    alert("يرجى اختيار جميع الألوان للأرضية والتطعيمات");
+                    return;
+                }
+                color = `أرضية ${base} + تطعيم (${m1}، ${m2}، ${m3})`;
+            }
+
+            // تحقق
+            if (!widthKey || widthKey === "0") { alert("يرجى اختيار العرض"); return; }
+            if (widthKey !== 'custom' && (!length || length <= 0)) { alert("يرجى إدخال طول صحيح بالمتر"); return; }
+            if (!qty || qty <= 0) { alert("تأكد من العدد"); return; }
+
+            const pricePerMeter = getPrice(widthKey);
+            const isCustom = widthKey === 'custom';
+            const total = isCustom ? 0 : (pricePerMeter * length * qty);
+            
+            const categoryLabel = currentCategory === 'mosque' ? 'حصير مسجد' : 'حصير منزلي';
+            const widthLabel = isCustom ? "خاص" : (WIDTH_LABELS[widthKey] || "120 سم");
+
+            const item = {
+                id: Date.now(),
+                category: categoryLabel,
+                color: color,
+                widthLabel: widthLabel,
+                length: length,
+                qty: qty,
+                pricePerMeter: pricePerMeter,
+                total: total,
+                isCustom: isCustom
+            };
+
+            cart.push(item);
+            renderCart();
+
+            // تصفير الحقول
+            lengthInput.value = '';
+            qtyInput.value = 1;
+            updateLivePrice();
+
+            // إظهار الفاتورة
+            document.getElementById('invoiceSection').classList.remove('hidden');
+            document.getElementById('invoiceSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteItem(id) {
+            if(confirm('حذف هذا البند؟')) {
+                cart = cart.filter(i => i.id !== id);
+                renderCart();
+                if(cart.length === 0) document.getElementById('invoiceSection').classList.add('hidden');
+            }
+        }
+
+        function clearCart() {
+            if(confirm('هل أنت متأكد من حذف كل الفاتورة؟')) {
+                cart = [];
+                renderCart();
+                document.getElementById('invoiceSection').classList.add('hidden');
+            }
+        }
+
+        function renderCart() {
+            const tbody = document.getElementById('cartTableBody');
+            tbody.innerHTML = '';
+            let grandTotal = 0;
+
+            cart.forEach(item => {
+                grandTotal += item.total;
+                const priceCell = item.isCustom ? 
+                    '<span class="text-yellow-600 text-[10px] bg-yellow-50 px-2 py-1 rounded">تسعير خاص</span>' : 
+                    `${item.total.toFixed(0)} ج`;
+
+                const row = `
+                    <tr class="hover:bg-blue-50 transition">
+                        <td class="p-3 border-b border-gray-50">
+                            <div class="font-bold text-blue-900 text-xs">${item.category}</div>
+                            <div class="text-[10px] text-gray-500 font-bold break-words whitespace-normal max-w-[150px]">${item.color}</div>
+                        </td>
+                        <td class="p-3 border-b border-gray-50 whitespace-nowrap text-xs font-bold text-gray-600">
+                            ${item.widthLabel} × ${item.length}م
+                        </td>
+                        <td class="p-3 border-b border-gray-50 text-center text-xs">${item.qty}</td>
+                        <td class="p-3 border-b border-gray-50 font-black text-blue-900 text-xs">
+                            ${priceCell}
+                        </td>
+                        <td class="p-3 border-b border-gray-50 text-center">
+                            <button onclick="deleteItem(${item.id})" class="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 w-8 h-8 rounded-full transition flex items-center justify-center mx-auto">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('grandTotalDisplay').innerHTML = `${grandTotal.toFixed(0)} <span class="text-sm">جنيه</span>`;
+        }
+
+        // ------------------ 7. الإرسال للواتساب ------------------
+        function sendOrder() {
+            if(cart.length === 0) return;
+
+            const typeText = currentUser.type === 'merchant' ? 'تاجر جملة (كود 1234)' : 'مستهلك (قطاعي)';
+            
+            let msg = `*طلب جديد من الموقع (مصنع الأصيل)* 🏭\n`;
+            msg += `👤 الاسم: ${currentUser.name}\n`;
+            msg += `🏷️ الصفة: ${typeText}\n`;
+            msg += `📅 التاريخ: ${new Date().toLocaleDateString('ar-EG')}\n`;
+            msg += `-----------------------------\n`;
+
+            let totalBill = 0;
+            let hasCustom = false;
+
+            cart.forEach((item, i) => {
+                msg += `*${i+1}) ${item.category}*\n`;
+                msg += `   🎨 ${item.color}\n`;
+                
+                if(item.isCustom) {
+                    msg += `   ⚠️ مقاس خاص (يحتاج تسعير)\n`;
+                    msg += `   📦 العدد: ${item.qty}\n`;
+                    hasCustom = true;
+                } else {
+                    msg += `   📏 المقاس: ${item.widthLabel} × ${item.length} متر\n`;
+                    msg += `   📦 العدد: ${item.qty}\n`;
+                    msg += `   💰 السعر: ${item.total} جنيه\n`;
+                    totalBill += item.total;
+                }
+                msg += `\n`;
+            });
+
+            msg += `-----------------------------\n`;
+            msg += `💰 *الإجمالي النهائي: ${totalBill} جنيه*\n`;
+            if(hasCustom) msg += `⚠️ (يوجد بنود خاصة سيتم الاتفاق على سعرها)\n`;
+            msg += `\nيرجى مراجعة الطلب وتأكيده.`;
+
+            const phone = "201006505376";
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+    </script>
+</body>
+</html>
